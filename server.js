@@ -1,6 +1,5 @@
 const express = require('express');
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
 
 const routes = require('./routes');
 
@@ -12,18 +11,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use(routes);
-
-// Connect to database
-const db = mysql.createConnection(
-  {
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'employees_db'
-  },
-  console.log(`Connected to the employees_db database.`)
-);
-
 
 app.use((req, res) => {
     res.status(404).end();
