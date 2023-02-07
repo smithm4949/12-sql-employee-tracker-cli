@@ -1,6 +1,7 @@
 const db = require('../../config/connection');
+const router = require('express').Router();
 
-app.get('/api/departments', (req, res) => {
+router.get('/', (req, res) => {
   const sql = `SELECT * FROM department`;
 
   db.query(sql, (err, rows) => {
@@ -14,3 +15,5 @@ app.get('/api/departments', (req, res) => {
       });
   });
 });
+
+module.exports = router;
