@@ -1,0 +1,16 @@
+{
+  "name": "12-sql-employee-tracker-cli",
+  "version": "1.0.0",
+  "description": "CLI for interacting with a mysql DB of employees",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Myles Smith",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jshint": "^2.12.0",
+    "mysql2": "^2.2.5"
+  }
+}
