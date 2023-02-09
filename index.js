@@ -13,12 +13,58 @@ const db = mysql.createConnection(
 
 const questionObj = {
   viewAllEmployees,
-//   addEmployee
-//   updateEmployee
+//   addEmployee,
+//   updateEmployee,
   viewAllRoles,
-//   addRole
-  viewAllDepartments
-//   addDepartment
+  addRole,
+  viewAllDepartments,
+  addDepartment
+}
+
+async function addDepartment() {
+  const sql = `INSERT INTO department
+  SET ?`;
+  const values = await inquirer.prompt({
+    type: "input",
+    name: "name",
+    message: "What is the name of the department?"
+  });
+  const [rows, fields] = await db.promise().query(sql, values);
+  return rows;
+}
+
+async function addRole() {
+  const sql = `INSERT INTO role
+  SET ?`;
+  const departmentOptions = await getDepartmentsForRolePrompt();
+  const values = await inquirer.prompt([{
+    type: "input",
+    name: "title",
+    message: "What is the title of the role?"
+  },
+  {
+    type: "input",
+    name: "salary",
+    message: "What is the salary of the role?"
+  },
+  {
+    type: "list",
+    name: "department_id",
+    message: "What department does this role belong to?",
+    choices: departmentOptions
+  }]);
+  const [rows, fields] = await db.promise().query(sql, values);
+  return rows;
+}
+
+async function getDepartmentsForRolePrompt() {
+  let choices = []
+  const [rows] = await db.promise().query(`SELECT * FROM department`);
+  rows.forEach(row => {
+    choices.push({name: row.name, value: row.id})
+  });
+  // console.log("--- CHOICES ---", choices);
+  return choices;
 }
 
 async function viewAllEmployees() {
