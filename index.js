@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const cTable = require('console.table');
 
 const db = mysql.createConnection(
   {
@@ -40,7 +41,8 @@ async function updateEmployee() {
     choices: roleOptions
   }]);
   const [rows] = await db.promise().query(sql, [role_id, id]);
-  return rows;
+  console.log('Updated employee!');
+  return;
 }
 
 async function addDepartment() {
@@ -52,7 +54,8 @@ async function addDepartment() {
     message: "What is the name of the department?"
   });
   const [rows] = await db.promise().query(sql, values);
-  return rows;
+  console.log(`Added ${values.name} department`);
+  return;
 }
 
 async function addRole() {
@@ -76,7 +79,8 @@ async function addRole() {
     choices: departmentOptions
   }]);
   const [rows] = await db.promise().query(sql, values);
-  return rows;
+  console.log(`Added ${values.title}`);
+  return;
 }
 
 async function addEmployee() {
@@ -110,7 +114,8 @@ async function addEmployee() {
     delete values.manager_id;
   }
   const [rows] = await db.promise().query(sql, values);
-  return rows;
+  console.log(`Added ${values.first_name} ${values.last_name} to the database`);
+  return;
 }
 
 async function getDepartmentsForRolePrompt() {
@@ -220,7 +225,7 @@ async function init() {
       quitProgram = true;
     } else {
       let results = await questionObj[nextStep]();
-      console.log(results);
+      if (results) console.table(results);
     }
   }
   //clean up before exiting program
