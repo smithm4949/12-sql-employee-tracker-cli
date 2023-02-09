@@ -215,10 +215,6 @@ async function init() {
   let quitProgram = false;
 
   while (!quitProgram) {
-    
-    // get next step, if not quit, run specific function
-    //function should 1) get appropiate inputs (if any) 2) return sql
-    //then run sql with inputs (if any)
 
     let nextStep = await askForNextStep();
     if (nextStep === 'quitProgram') {
@@ -228,7 +224,7 @@ async function init() {
       if (results) console.table(results);
     }
   }
-  //clean up before exiting program
+
   console.log('Thanks for using the Employee Manager CLI!')
   process.exit(0);
 }
