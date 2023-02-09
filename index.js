@@ -13,7 +13,7 @@ const db = mysql.createConnection(
 
 const questionObj = {
   viewAllEmployees,
-//   addEmployee,
+  addEmployee,
 //   updateEmployee,
   viewAllRoles,
   addRole,
@@ -29,7 +29,7 @@ async function addDepartment() {
     name: "name",
     message: "What is the name of the department?"
   });
-  const [rows, fields] = await db.promise().query(sql, values);
+  const [rows] = await db.promise().query(sql, values);
   return rows;
 }
 
@@ -53,17 +53,70 @@ async function addRole() {
     message: "What department does this role belong to?",
     choices: departmentOptions
   }]);
-  const [rows, fields] = await db.promise().query(sql, values);
+  const [rows] = await db.promise().query(sql, values);
+  return rows;
+}
+
+async function addEmployee() {
+  const sql = `INSERT INTO employee
+  SET ?`;
+  const roleOptions = await getRolesForEmployeePrompt();
+  const managerOptions = await getManagersForEmployeePrompt();
+  const values = await inquirer.prompt([{
+    type: "input",
+    name: "first_name",
+    message: "What is the employees first name?"
+  },
+  {
+    type: "input",
+    name: "last_name",
+    message: "What is the employees last name?"
+  },
+  {
+    type: "list",
+    name: "role_id",
+    message: "What is this employee's role?",
+    choices: roleOptions
+  },
+  {
+    type: "list",
+    name: "manager_id",
+    message: "Who is this employee's manager?",
+    choices: managerOptions
+  }]);
+  if (values.manager_id === '') {
+    delete values.manager_id;
+  }
+  const [rows] = await db.promise().query(sql, values);
   return rows;
 }
 
 async function getDepartmentsForRolePrompt() {
-  let choices = []
+  let choices = [];
   const [rows] = await db.promise().query(`SELECT * FROM department`);
   rows.forEach(row => {
     choices.push({name: row.name, value: row.id})
   });
-  // console.log("--- CHOICES ---", choices);
+  return choices;
+}
+
+async function getRolesForEmployeePrompt() {
+  let choices = [];
+  const [rows] = await db.promise().query(`SELECT id, title FROM role`);
+  rows.forEach(row => {
+    choices.push({name: row.title, value: row.id})
+  });
+  return choices;
+}
+
+async function getManagersForEmployeePrompt() {
+  let choices = [{name: "None", value: '' }];
+  let sql = `SELECT id, concat(first_name, ' ', last_name) AS manager
+  FROM employee`;
+  const [rows] = await db.promise().query(sql);
+  rows.forEach(row => {
+    choices.push({name: row.manager, value: row.id})
+  });
   return choices;
 }
 
@@ -78,7 +131,7 @@ async function viewAllEmployees() {
 FROM employee
 LEFT JOIN employee manager ON employee.manager_id = manager.id
 LEFT JOIN role ON employee.role_id = role.id`
-  const [rows, fields] = await db.promise().query(sql);
+  const [rows] = await db.promise().query(sql);
   return rows;
 }
 
@@ -90,12 +143,12 @@ async function viewAllRoles() {
   department.name AS department
 FROM role
 LEFT JOIN department ON role.department_id = department.id`
-  const [rows, fields] = await db.promise().query(sql);
+  const [rows] = await db.promise().query(sql);
   return rows;
 }
 
 async function viewAllDepartments() {
-  const [rows, fields] = await db.promise().query('SELECT * FROM department');
+  const [rows] = await db.promise().query('SELECT * FROM department');
   return rows;
 }
 
