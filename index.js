@@ -14,11 +14,33 @@ const db = mysql.createConnection(
 const questionObj = {
   viewAllEmployees,
   addEmployee,
-//   updateEmployee,
+  updateEmployee,
   viewAllRoles,
   addRole,
   viewAllDepartments,
   addDepartment
+}
+
+async function updateEmployee() {
+  const sql = `UPDATE employee
+  SET role_id = ?
+  WHERE id = ?`;
+  const employeeOptions = await getEmployeesForUpdatePrompt();
+  const roleOptions = await getRolesForEmployeePrompt();
+  const { role_id, id } = await inquirer.prompt([{
+    type: "list",
+    name: "id",
+    message: "Which employee would you like to update?",
+    choices: employeeOptions
+  },
+  {
+    type: "list",
+    name: "role_id",
+    message: "What role needs to be assigned to them?",
+    choices: roleOptions
+  }]);
+  const [rows] = await db.promise().query(sql, [role_id, id]);
+  return rows;
 }
 
 async function addDepartment() {
@@ -120,6 +142,17 @@ async function getManagersForEmployeePrompt() {
   return choices;
 }
 
+async function getEmployeesForUpdatePrompt() {
+  let choices = [];
+  let sql = `SELECT id, concat(first_name, ' ', last_name) AS fullName
+  FROM employee`;
+  const [rows] = await db.promise().query(sql);
+  rows.forEach(row => {
+    choices.push({name: row.fullName, value: row.id})
+  });
+  return choices;
+}
+
 async function viewAllEmployees() {
   const sql = `
   SELECT
@@ -185,14 +218,14 @@ async function init() {
     let nextStep = await askForNextStep();
     if (nextStep === 'quitProgram') {
       quitProgram = true;
-      return;
     } else {
       let results = await questionObj[nextStep]();
       console.log(results);
     }
   }
   //clean up before exiting program
-  return;
+  console.log('Thanks for using the Employee Manager CLI!')
+  process.exit(0);
 }
 
 init();
