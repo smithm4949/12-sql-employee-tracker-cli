@@ -19,7 +19,22 @@ const questionObj = {
   viewAllRoles,
   addRole,
   viewAllDepartments,
-  addDepartment
+  addDepartment,
+  viewDepartentSalaries
+}
+
+async function viewDepartentSalaries() {
+  const sql = 
+`SELECT department.id AS department_id, department.name, SUM(budgets_by_role.total_for_role) AS total_utilized_budget
+FROM (
+  SELECT role.title, role.department_id, SUM(role.salary) AS total_for_role
+FROM employee
+LEFT JOIN role ON employee.role_id = role.id
+GROUP BY role.id) budgets_by_role
+LEFT JOIN department ON budgets_by_role.department_id = department.id
+GROUP BY department.id;`
+  const [rows] = await db.promise().query(sql);
+  return rows;
 }
 
 async function updateEmployee() {
@@ -204,6 +219,7 @@ async function askForNextStep() {
       {name: 'View All Departments', value: 'viewAllDepartments'},
       {name: 'Add Department', value: 'addDepartment'},
       {name: 'Quit', value: 'quitProgram'},
+      {name: 'View Total Utilized Budgets', value: 'viewDepartentSalaries'}
     ]
   });
   return nextStep;
