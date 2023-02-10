@@ -12,6 +12,7 @@ This application is not deployed nor hosted and there is no one way for other us
 
 A demo has been recorded showcasing both the app usage as well as the app passing unit tests, as per required in the challenge readme requirements.
 The demo can be viewed here: [SQL Employee Tracker demo](https://watch.screencastify.com/v/jmBaKkNW3W6JsVU1QEla)
+[BONUS feature demo: view salary totals for a department](https://watch.screencastify.com/v/nha4Crh8ZSCJHX3rLnlz)
 
 ## Authors and acknowledgment
 
